@@ -123,7 +123,7 @@ function SWEP:PrimaryAttack()
 			hook.Add("EntityTakeDamage", title, function(ent, dmginfo)
 				if IsValid(ent) and ent:IsPlayer() and dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetActiveWeapon() == self then
 					if not ROLES and ent:GetTeam() == owner:GetTeam() 
-                    or ROLES and ent:GetRoleData().team == owner:GetRoleData().team
+                    or ROLES and ent:IsTeamMember(owner)
                     then
 						local newdmg = DamageInfo()
 						newdmg:SetDamage(9990)

@@ -102,6 +102,16 @@ function SWEP:Initialize()
 	PrecacheParticleSystem("smoke_trail")
 end
 
+local function GetTeam(ply)
+	local role = ply:GetRole()
+
+	if role == ROLE_INNOCENT or role == ROLE_DETECTIVE then
+		return 0
+	else
+		return 1
+	end
+end
+
 function SWEP:PrimaryAttack()
 	if self:CanPrimaryAttack() then
 		self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
@@ -122,7 +132,7 @@ function SWEP:PrimaryAttack()
 
 			hook.Add("EntityTakeDamage", title, function(ent, dmginfo)
 				if IsValid(ent) and ent:IsPlayer() and dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetActiveWeapon() == self then
-					if not ROLES and ent:GetTeam() == owner:GetTeam() 
+					if not ROLES and (ent.GetTeam and ent:GetTeam() == owner:GetTeam() or not ent.GetTeam and GetTeam(ent) == GetTeam(owner))
                     or ROLES and ent:IsTeamMember(owner)
                     then
 						local newdmg = DamageInfo()

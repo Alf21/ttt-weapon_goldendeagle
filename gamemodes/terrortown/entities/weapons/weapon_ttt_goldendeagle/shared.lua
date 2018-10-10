@@ -4,11 +4,14 @@ SWEP.Contact = "http://steamcommunity.com/profiles/76561198032479768"
 
 if SERVER then
 	AddCSLuaFile()
-    
+
 	resource.AddWorkshop("934575429")
 else
-	LANG.AddToLanguage("english", "golden_deagle_name", "Golden Deagle")
-	LANG.AddToLanguage("english", "golden_deagle_desc", "Shoot a traitor, kill a traitor.\nShoot an innocent or detective, kill yourself.\nBe careful.")
+	LANG.AddToLanguage("English", "golden_deagle_name", "Golden Deagle")
+	LANG.AddToLanguage("English", "golden_deagle_desc", "Shoot a player in another team, kill the player.\nShoot a team mate, kill yourself.\nBe careful!")
+
+	LANG.AddToLanguage("Deutsch", "golden_deagle_name", "Goldene Deagle")
+	LANG.AddToLanguage("Deutsch", "golden_deagle_desc", "Schieße auf einen Spieler eines anderen Teams, um ihn direkt zu töten.\nSchieße auf deine Mates, um dich selbst zu töten.\nSei vorsichtig!")
 
 	SWEP.PrintName = "golden_deagle_name"
 	SWEP.Slot = 6
@@ -89,7 +92,7 @@ function SWEP:Initialize()
 	elseif SERVER then
 		self.shotsFired = 0
 		self.fingerprints = {}
-        
+
 		self:SetIronsights(false)
 	end
 
@@ -124,36 +127,35 @@ function SWEP:PrimaryAttack()
 
 		if SERVER then
 			sound.Play(self.Primary.Sound, self:GetPos())
-            
+
 			self.shotsFired = self.shotsFired + 1
 
-			local owner = self.Owner
 			local title = "HandleGoldenDeagle" .. self:EntIndex() .. self.shotsFired
 
 			hook.Add("EntityTakeDamage", title, function(ent, dmginfo)
 				if IsValid(ent) and ent:IsPlayer() and dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetActiveWeapon() == self then
-					if not ROLES and (ent.GetTeam and ent:GetTeam() == owner:GetTeam() or not ent.GetTeam and GetTeam(ent) == GetTeam(owner))
-                    or ROLES and ent:IsTeamMember(owner)
-                    then
+					if not TTT2 and (ent.GetTeam and ent:GetTeam() == owner:GetTeam() or not ent.GetTeam and GetTeam(ent) == GetTeam(owner))
+					or TTT2 and ent:IsInTeam(owner)
+					then
 						local newdmg = DamageInfo()
 						newdmg:SetDamage(9990)
 						newdmg:SetAttacker(owner)
-						newdmg:SetInflictor(self.Weapon)
+						newdmg:SetInflictor(self)
 						newdmg:SetDamageType(DMG_BULLET)
 						newdmg:SetDamagePosition(owner:GetPos())
 
 						hook.Remove("EntityTakeDamage", title) -- remove hook before applying new damage
-                        
+
 						owner:TakeDamageInfo(newdmg)
-                        
+
 						return true -- block all damage on the target
 					else
 						hook.Remove("EntityTakeDamage", title) -- remove hook before applying new damage
-                        
+
 						dmginfo:ScaleDamage(270) -- deals 9990 damage
 					end
 				else
-					hook.Remove("EntityTakeDamage", title) 
+					hook.Remove("EntityTakeDamage", title)
 				end
 			end)
 		end
@@ -165,22 +167,22 @@ function SWEP:PrimaryAttack()
 			owner:ViewPunch(Angle(math.Rand(-0.2, -0.1) * self.Primary.Recoil, math.Rand(-0.1, 0.1) * self.Primary.Recoil, 0))
 		end
 
-		timer.Simple(0.5, function() 
-            if IsValid(self) and IsValid(self.Owner) then 
-                ParticleEffectAttach("smoke_trail", PATTACH_POINT_FOLLOW, self.Owner:GetViewModel(), 1) 
-            end 
-        end)
+		timer.Simple(0.5, function()
+			if IsValid(self) and IsValid(self.Owner) then
+				ParticleEffectAttach("smoke_trail", PATTACH_POINT_FOLLOW, self.Owner:GetViewModel(), 1)
+			end
+		end)
 	end
 end
 
 function SWEP:Holster()
 	if IsValid(self.Owner) then
 		local vm = self.Owner:GetViewModel()
-		
-        if IsValid(vm) then
+
+		if IsValid(vm) then
 			vm:StopParticles()
 		end
 	end
-    
+
 	return true
 end

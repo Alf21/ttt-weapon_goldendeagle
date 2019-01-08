@@ -5,7 +5,7 @@ SWEP.Contact = "http://steamcommunity.com/profiles/76561198032479768"
 if SERVER then
 	AddCSLuaFile()
 
-	resource.AddWorkshop("934575429")
+	resource.AddWorkshop("1398388611")
 else
 	LANG.AddToLanguage("English", "golden_deagle_name", "Golden Deagle")
 	LANG.AddToLanguage("English", "golden_deagle_desc", "Shoot a player in another team, kill the player.\nShoot a team mate, kill yourself.\nBe careful!")
